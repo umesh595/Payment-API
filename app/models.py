@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
-
+from datetime import datetime, timezone
 Base = declarative_base()
 
 
@@ -17,7 +17,7 @@ class User(Base):
     phone = Column(String(20), nullable=True)
     hashed_password = Column(String(255), nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     
     # Relationships
     orders = relationship("Order", back_populates="user")
@@ -33,7 +33,7 @@ class Order(Base):
     currency = Column(String(10), nullable=False)
     idempotency_key = Column(Text, nullable=True)
     status = Column(String(50), nullable=False, default="created")
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     
     # Relationships
     user = relationship("User", back_populates="orders")
@@ -48,7 +48,7 @@ class Wallet(Base):
     
     customer_id = Column(String(100), ForeignKey('users.user_id'), primary_key=True)
     balance = Column(Numeric(10, 2), nullable=False, default=0)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime(timezone=True),default=lambda: datetime.now(timezone.utc),onupdate=lambda: datetime.now(timezone.utc))
     
     # Relationships
     user = relationship("User", back_populates="wallet")

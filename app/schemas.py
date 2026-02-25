@@ -34,6 +34,13 @@ class User(UserBase):
 class UserLogin(BaseModel):
     user_id: str = Field(..., pattern=r'^[A-Z]+-\d+$') 
     password: str
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "user_id": "CUST-001",
+                "password": "password123"
+            }
+        }
 
 class UserResponse(UserBase):
     user_id: str
